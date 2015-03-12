@@ -15,11 +15,16 @@ exec('adb shell pm list packages -f -3 | grep "fullbancos"', function(err, stdou
   exec(['adb pull', apkFile, appFile].join(' '), function(err, stdout, stderr) {
     if(err) return console.log(stderr);
 
-    // Manul, no queda de otra                                            vvvvvvvv                                                                        vvvvvvvvv
-    var bancos = ['azteca', 'banbif', 'city', 'comercio', 'bbva', 'bcp', 'deutsche', 'falabella', 'financiero', 'gnb', 'interbank', 'mibanco', 'ripley', 'santander', 'scotiabank', 'nacion'];
+    // Reemplazar por esto cuando existan...                             deutsche                                                                      santander
+    // Manul, no queda de otra                                            vvvvvv                                                                        vvvvvv
+    var bancos = ['azteca', 'banbif', 'city', 'comercio', 'bbva', 'bcp', 'azteca', 'falabella', 'financiero', 'gnb', 'interbank', 'mibanco', 'ripley', 'azteca', 'scotiabank', 'nacion'];
 
     var zip = new Zip(appFile);
     zip.extractEntryTo('assets/' + DB_FILE, 'downloads', false, true);
+
+    _.each(bancos, function(banco) {
+      zip.extractEntryTo('res/drawable-hdpi/pin_' + banco + '.png', 'data/img', false, true);
+    });
 
     db = new sqlite3.Database('./downloads/' + DB_FILE);
     db.all('SELECT url, phone, picture, idCompany, flagAct FROM banco', function(err, companies) {
