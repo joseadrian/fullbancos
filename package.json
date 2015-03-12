@@ -1,0 +1,14 @@
+{
+  "name": "bancos-peru",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Joseadrian Ochoa",
+  "license": "ISC",
+  "devDependencies": {
+    "adm-zip": "^0.4.7",
+    "sqlite3": "^3.0.5",
+    "underscore": "^1.8.2"
+  }
+}
