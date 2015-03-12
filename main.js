@@ -4,8 +4,7 @@ var exec = require('child_process').exec;
       fs = require('fs'),
      Zip = require('adm-zip'),
       _  = require('underscore'),
- sqlite3 = require('sqlite3').verbose(),
-      db = new sqlite3.Database('./downloads/' + DB_FILE);
+ sqlite3 = require('sqlite3').verbose();
 
 exec('adb shell pm list packages -f -3 | grep "fullbancos"', function(err, stdout, stderr) {
   if(stderr) return console.log(stderr);
@@ -22,6 +21,7 @@ exec('adb shell pm list packages -f -3 | grep "fullbancos"', function(err, stdou
     var zip = new Zip(appFile);
     zip.extractEntryTo('assets/' + DB_FILE, 'downloads', false, true);
 
+    db = new sqlite3.Database('./downloads/' + DB_FILE);
     db.all('SELECT url, phone, picture, idCompany, flagAct FROM banco', function(err, companies) {
       companies = _.map(companies, function(company, index) {
         company.pinName = bancos[index];
