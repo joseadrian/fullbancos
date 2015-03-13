@@ -40,7 +40,43 @@ exec('adb shell pm list packages -f -3 | grep "fullbancos"', function(err, stdou
       db.all('SELECT * FROM sucursal ORDER BY _rowid_ ASC', function(err, sucursales) {
         if(err) console.log(err);
 
+        var geojson = {
+          type: 'FeatureCollection',
+          features: []
+        };
+
+        /**
+         * Armando la estructura geojson
+         */
+        geojson.features = _.map(sucursales, function(sucursal) {
+          if(_.isEmpty(sucursal.latitude) || _.isEmpty(sucursal.latitude)) {
+            return false;
+          }
+
+          sucursal     = _.pick(sucursal, 'name', 'address', 'descript', 'url', 'phone', 'nameDistrict', 'nameCity', 'latitude', 'longitude');
+          sucursal._l  = [parseFloat(sucursal.longitude), parseFloat(sucursal.latitude)];
+          sucursal.geo = { name: sucursal.name };
+
+          return {
+            type: 'Feature',
+            geometry: {
+              coordinates: sucursal._l,
+              type: 'Point'
+            },
+            properties: _.omit(sucursal, 'geo')
+          }
+        });
+
+        // Limpia arreglo de valores falsos
+        geojson.features = _.compact(geojson.features);
+
+        // JSON (mantiene estructure de la BD)
         fs.writeFile('data/sucursales.json', JSON.stringify(sucursales), function (err) {
+          if (err) return console.log(err);
+        });
+
+        // formato geojson http://geojson.org/geojson-spec.html
+        fs.writeFile('data/sucursales.geojson', JSON.stringify(geojson), function (err) {
           if (err) return console.log(err);
         });
       });
